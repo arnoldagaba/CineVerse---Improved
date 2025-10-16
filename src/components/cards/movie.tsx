@@ -36,11 +36,19 @@ export function MovieCard({ movie, size = "md" }: MovieCardProps) {
             e.preventDefault();
             return;
         }
-        navigate({ to: "/movie/$movieId", params: { movieId: movie.id } });
+        navigate({
+            to: "/movie/$movieId",
+            search: { tab: "overview" },
+            params: { movieId: movie.id },
+        });
     };
 
     return (
-        <Link params={{ movieId: movie.id }} to={"/movie/$movieId"}>
+        <Link
+            params={{ movieId: movie.id }}
+            search={{ tab: "overview" }}
+            to={"/movie/$movieId"}
+        >
             <Card className="group flex h-full cursor-pointer flex-col overflow-hidden transition-all duration-300 hover:shadow-lg">
                 <CardContent
                     className="relative flex-1 overflow-hidden bg-muted p-0"
