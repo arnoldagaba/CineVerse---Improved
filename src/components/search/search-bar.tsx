@@ -40,11 +40,16 @@ export function SearchBar() {
                 search: { tab: "overview" },
             });
         } else if (result.media_type === "tv") {
-            navigate({ to: `/tv/${result.id}`, params: { tvId: result.id } });
+            navigate({
+                to: `/tv/${result.id}`,
+                params: { tvId: result.id },
+                search: { tab: "overview" },
+            });
         } else if (result.media_type === "person") {
             navigate({
                 to: `/person/${result.id}`,
                 params: { personId: result.id },
+                search: { tab: "overview" },
             });
         }
         setQuery("");
