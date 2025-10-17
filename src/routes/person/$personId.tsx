@@ -1,33 +1,45 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { Suspense } from "react";
+import { personQueryOptions } from "@/api/queries";
+import { MovieDetailSkeleton } from "@/components/skeletons/movie-detail";
+import { PersonDetailPage } from "@/pages/person-detail";
 
 export const Route = createFileRoute("/person/$personId")({
     component: RouteComponent,
-    parseParams: (params) => ({ personId: Number(params.personId) }),
-    errorComponent: ({ error }) => (
-        <div className="container mx-auto px-4 py-16">
-            <div className="space-y-4 text-center">
-                <h1 className="font-bold text-4xl">Person Page Error</h1>
-                <p className="text-muted-foreground">{error.message}</p>
-            </div>
-        </div>
-    ),
+    parseParams: (params) => ({
+        personId: Number(params.personId),
+    }),
+
+    loader: async ({ context: { queryClient }, params: { personId } }) => {
+        await Promise.all([
+            queryClient.ensureQueryData(personQueryOptions.detail(personId)),
+            queryClient.ensureQueryData(personQueryOptions.images(personId)),
+            queryClient.ensureQueryData(
+                personQueryOptions.movieCredits(personId)
+            ),
+            queryClient.ensureQueryData(personQueryOptions.tvCredits(personId)),
+        ]);
+    },
+
+    // head: ({ loaderData }) => ({
+    //     meta: [
+    //         {
+    //             title: `${loaderData.name} - Cineverse`,
+    //         },
+    //         {
+    //             name: "description",
+    //             content:
+    //                 loaderData.biography ||
+    //                 `Filmography and details for ${loaderData.name}`,
+    //         },
+    //     ],
+    // }),
 });
 
 function RouteComponent() {
     return (
-        <div className="container mx-auto px-4 py-16">
-            <div className="mx-auto max-w-2xl space-y-6 text-center">
-                <h1 className="font-bold text-3xl">Person Page</h1>
-                <p className="text-muted-foreground">
-                    This page is under construction. Check back soon for the
-                    person profile.
-                </p>
-                <div>
-                    <Link className="text-primary hover:underline" to="/">
-                        Go to Home
-                    </Link>
-                </div>
-            </div>
-        </div>
+        <Suspense fallback={<MovieDetailSkeleton />}>
+            <PersonDetailPage />
+        </Suspense>
     );
 }

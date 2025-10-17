@@ -1,9 +1,9 @@
 /** biome-ignore-all lint/style/noMagicNumbers: <- Just ignore the lint error -> */
 import { MovieCard } from "@/components/cards/movie";
-import type { Movie } from "@/types/tmdb";
+import type { Movie, TVShow } from "@/types/tmdb";
 
 type MovieGridProps = {
-    movies: Movie[];
+    movies: Array<Movie | TVShow>;
     columns?: {
         sm?: number;
         md?: number;
@@ -21,7 +21,7 @@ export function MovieGrid({
     return (
         <div className={`${gridClass}`}>
             {movies.map((movie) => (
-                <MovieCard key={movie.id} movie={movie} />
+                <MovieCard key={movie.id} movie={movie as Movie} />
             ))}
         </div>
     );
