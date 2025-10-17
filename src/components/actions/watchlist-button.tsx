@@ -2,6 +2,7 @@ import { Bookmark, BookmarkCheck } from "lucide-react";
 import type { ReactNode } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { useWatchlistStore } from "@/stores/watchlist";
 
 type WatchlistButtonProps = {
@@ -61,7 +62,11 @@ export function WatchlistButton({
 
     return (
         <Button
-            className={`${className}`}
+            aria-label={
+                inWatchlist ? "Remove from watchlist" : "Add to watchlist"
+            }
+            aria-pressed={inWatchlist}
+            className={cn(className)}
             onClick={handleClick}
             size={size}
             variant={variant}

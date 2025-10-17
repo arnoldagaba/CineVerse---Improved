@@ -5,11 +5,11 @@ import { WatchlistButton } from "@/components/actions/watchlist-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getPosterUrl } from "@/config/tmdb";
-import type { Movie } from "@/types/tmdb";
+import type { Movie, TVShow } from "@/types/tmdb";
 import { prefetchMovieRelated } from "@/utils/cache-utils";
 
 type MovieCardProps = {
-    movie: Movie;
+    movie: Movie | TVShow;
     size?: "sm" | "md" | "lg";
 };
 
@@ -36,11 +36,22 @@ export function MovieCard({ movie, size = "md" }: MovieCardProps) {
             e.preventDefault();
             return;
         }
-        navigate({ to: "/movie/$movieId", params: { movieId: movie.id } });
+        navigate({ to: "/movie/$movieId", params: { movieId: movie.id }, search: { tab: "overview" } });
     };
 
+    const displayTitle = "title" in movie ? movie.title : movie.name;
+    const displayYear = (() => {
+        const dateString =
+            "release_date" in movie ? movie.release_date : movie.first_air_date;
+        if (!dateString) {
+            return "";
+        }
+        const year = new Date(dateString).getFullYear();
+        return Number.isNaN(year) ? "" : String(year);
+    })();
+
     return (
-        <Link params={{ movieId: movie.id }} to={"/movie/$movieId"}>
+        <Link params={{ movieId: movie.id }} search={{ tab: "overview" }} to={"/movie/$movieId"}>
             <Card className="group flex h-full cursor-pointer flex-col overflow-hidden transition-all duration-300 hover:shadow-lg">
                 <CardContent
                     className="relative flex-1 overflow-hidden bg-muted p-0"
@@ -50,8 +61,8 @@ export function MovieCard({ movie, size = "md" }: MovieCardProps) {
                     {/** biome-ignore lint/nursery/useImageSize: <- Just ignore the lint error -> */}
                     {/** biome-ignore lint/performance/noImgElement: <- Just ignore the lint error -> */}
                     <img
-                        alt={movie.title}
-                        className="h-64 w-full object-cover transition-transform duration-300 group-hover:scale-110 sm:h-72"
+                        alt={displayTitle}
+                        className="h-64 w-full object-cover transition-transform duration-300 group-hover:scale-105 sm:h-64 md:h-72"
                         loading="lazy"
                         src={posterUrl}
                     />
@@ -67,7 +78,7 @@ export function MovieCard({ movie, size = "md" }: MovieCardProps) {
                     )}
 
                     {/* Hover Overlay */}
-                    <div className="absolute inset-0 z-10 flex items-end bg-gradient-to-t from-black/80 via-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    <div className="absolute inset-0 z-10 flex items-end bg-gradient-to-t from-black/80 via-transparent p-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                         <WatchlistButton
                             className="gap-2 text-white hover:bg-white/20"
                             data-watchlist-button
@@ -77,20 +88,35 @@ export function MovieCard({ movie, size = "md" }: MovieCardProps) {
                             type="movie"
                             variant="ghost"
                         >
-                            ➕ Add
+                            Add
                         </WatchlistButton>
                     </div>
                 </CardContent>
 
                 <CardHeader className="flex flex-1 flex-col justify-between p-3">
-                    <div>
+                    <div className="space-y-1">
                         <h3 className="line-clamp-2 font-semibold text-sm transition-colors group-hover:text-primary">
-                            {movie.title}
+                            {displayTitle}
                         </h3>
 
-                        <p className="mt-1 text-muted-foreground text-xs">
-                            {new Date(movie.release_date).getFullYear()}
-                        </p>
+                        <div className="flex items-center justify-between">
+                            {displayYear && (
+                                <p className="text-muted-foreground text-xs">
+                                    {displayYear}
+                                </p>
+                            )}
+                            {movie.vote_average > 0 && (
+                                <p className="text-muted-foreground text-xs">
+                                    ⭐ {movie.vote_average.toFixed(1)}
+                                </p>
+                            )}
+                        </div>
+
+                        {"overview" in movie && movie.overview && (
+                            <p className="line-clamp-2 text-muted-foreground text-xs">
+                                {movie.overview}
+                            </p>
+                        )}
                     </div>
                 </CardHeader>
             </Card>

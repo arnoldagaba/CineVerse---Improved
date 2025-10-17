@@ -30,6 +30,7 @@ export function VideoModal() {
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowFullScreen
                             className="h-full w-full"
+                            loading="lazy"
                             src={`https://www.youtube.com/embed/${video.key}?autoplay=1&controls=1`}
                             title={video.name}
                         />

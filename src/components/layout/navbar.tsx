@@ -10,6 +10,7 @@ import { useWatchlistStore } from "@/stores/watchlist";
 export function Navbar() {
     const { items: watchlistItems } = useWatchlistStore();
     const [isOpen, setIsOpen] = useState(false);
+    const MAX_WATCHLIST_BADGE = 99;
 
     return (
         <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -17,11 +18,12 @@ export function Navbar() {
                 <div className="flex h-16 items-center justify-between">
                     {/* Logo */}
                     <Link
+                        aria-label="Cineverse home"
                         className="flex items-center gap-2 font-bold text-xl transition-opacity hover:opacity-80"
                         to="/"
                     >
-                        <Film className="h-6 w-6 text-primary" />
-                        <span className="hidden sm:inline">Cineverse</span>
+                        <Film aria-hidden className="h-6 w-6 text-primary" />
+                        <span className="hidden sm:inline">CineVerse</span>
                     </Link>
 
                     {/* Desktop Navigation */}
@@ -61,8 +63,9 @@ export function Navbar() {
                                 </span>
                                 {watchlistItems.length > 0 && (
                                     <span className="-top-1 -right-1 absolute flex h-5 w-5 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground text-xs">
-                                        {watchlistItems.length > 99
-                                            ? "99+"
+                                        {watchlistItems.length >
+                                        MAX_WATCHLIST_BADGE
+                                            ? `${MAX_WATCHLIST_BADGE}+`
                                             : watchlistItems.length}
                                     </span>
                                 )}
@@ -75,8 +78,12 @@ export function Navbar() {
                         {/* Mobile Menu */}
                         <Sheet onOpenChange={setIsOpen} open={isOpen}>
                             <SheetTrigger asChild className="md:hidden">
-                                <Button size="icon" variant="ghost">
-                                    <Menu className="h-5 w-5" />
+                                <Button
+                                    aria-label="Open menu"
+                                    size="icon"
+                                    variant="ghost"
+                                >
+                                    <Menu aria-hidden className="h-5 w-5" />
                                 </Button>
                             </SheetTrigger>
 

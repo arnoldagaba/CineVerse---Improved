@@ -52,11 +52,12 @@ export function MovieCarousel({
     };
 
     return (
-        <div className="group relative">
+        <div className="group/carousel relative">
             {/* Left Button */}
             {showControls && canScrollLeft && (
                 <Button
-                    className="-translate-y-1/2 absolute top-1/2 left-0 z-10 rounded-full opacity-0 shadow-lg transition-opacity group-hover:opacity-100"
+                    aria-label="Scroll left"
+                    className="-translate-y-1/2 absolute top-1/2 left-0 z-10 rounded-full opacity-0 shadow-lg transition-opacity group-hover/carousel:opacity-100"
                     onClick={() => scroll("left")}
                     size="icon"
                     variant="secondary"
@@ -83,7 +84,8 @@ export function MovieCarousel({
             {/* Right Button */}
             {showControls && canScrollRight && (
                 <Button
-                    className="-translate-y-1/2 absolute top-1/2 right-0 z-10 rounded-full opacity-0 shadow-lg transition-opacity group-hover:opacity-100"
+                    aria-label="Scroll right"
+                    className="-translate-y-1/2 absolute top-1/2 right-0 z-10 rounded-full opacity-0 shadow-lg transition-opacity group-hover/carousel:opacity-100"
                     onClick={() => scroll("right")}
                     size="icon"
                     variant="secondary"

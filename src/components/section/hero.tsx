@@ -22,9 +22,15 @@ export function HeroSection({ movie }: HeroSectionProps) {
     );
     const { openModal } = useVideoModal();
 
-    const trailer = videos.results.find(
-        (v) => v.type === "Trailer" && v.site === "YouTube"
-    );
+    // Prefer official YouTube trailer, then any YouTube trailer, then any YouTube video
+    const trailer =
+        videos.results.find(
+            (v) => v.type === "Trailer" && v.site === "YouTube" && v.official
+        ) ||
+        videos.results.find(
+            (v) => v.type === "Trailer" && v.site === "YouTube"
+        ) ||
+        videos.results.find((v) => v.site === "YouTube");
 
     const backdropUrl = getBackdropUrl(movie.backdrop_path);
     const year = new Date(movie.release_date).getFullYear();
@@ -93,11 +99,13 @@ export function HeroSection({ movie }: HeroSectionProps) {
                     <div className="flex items-center gap-3 pt-2">
                         {trailer && (
                             <Button
+                                aria-label={`Watch trailer for ${movie.title}`}
                                 className="gap-2"
                                 onClick={() => openModal(trailer)}
                                 size="lg"
+                                title={`Play trailer: ${trailer.name}`}
                             >
-                                <Play className="h-5 w-5" />
+                                <Play aria-hidden className="h-5 w-5" />
                                 Watch Trailer
                             </Button>
                         )}

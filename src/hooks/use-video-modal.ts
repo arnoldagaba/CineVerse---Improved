@@ -1,24 +1,10 @@
-import { useState } from "react";
-import type { Video } from "@/types/tmdb";
+import { useVideoModalStore } from "@/stores/video-modal";
 
 export function useVideoModal() {
-    const [isOpen, setIsOpen] = useState(false);
-    const [video, setVideo] = useState<Video | null>(null);
+    const isOpen = useVideoModalStore((s) => s.isOpen);
+    const video = useVideoModalStore((s) => s.video);
+    const openModal = useVideoModalStore((s) => s.openModal);
+    const closeModal = useVideoModalStore((s) => s.closeModal);
 
-    const openModal = (vid: Video) => {
-        setVideo(vid);
-        setIsOpen(true);
-    };
-
-    const closeModal = () => {
-        setIsOpen(false);
-        setVideo(null);
-    };
-
-    return {
-        isOpen,
-        video,
-        openModal,
-        closeModal,
-    };
+    return { isOpen, video, openModal, closeModal };
 }
