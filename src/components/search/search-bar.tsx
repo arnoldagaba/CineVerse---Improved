@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { Clock, Search, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { type SearchResult, searchQueryOptions } from "@/api/queries";
 import { Input } from "@/components/ui/input";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -12,6 +12,7 @@ import { usePreferencesStore } from "@/stores/preferences";
 export function SearchBar() {
     const [query, setQuery] = useState("");
     const [isOpen, setIsOpen] = useState(false);
+    const rootRef = useRef<HTMLDivElement>(null);
     const debouncedQuery = useDebouncedValue(query, 300);
     const navigate = useNavigate();
     const { searchHistory, addToSearchHistory } = usePreferencesStore();
@@ -24,10 +25,7 @@ export function SearchBar() {
     const handleSearch = (searchQuery: string) => {
         if (searchQuery.trim()) {
             addToSearchHistory(searchQuery);
-            navigate({
-                to: "/search",
-                search: { q: searchQuery, type: "all" },
-            });
+            // No search route defined; just close dropdown and keep history
             setQuery("");
             setIsOpen(false);
         }
@@ -36,18 +34,42 @@ export function SearchBar() {
     const handleSuggestionClick = (result: SearchResult) => {
         addToSearchHistory(query);
         if (result.media_type === "movie") {
-            navigate({ to: `/movie/${result.id}` });
+            navigate({
+                to: "/movie/$movieId",
+                params: { movieId: result.id },
+                search: { tab: "overview" },
+            });
         } else if (result.media_type === "tv") {
-            navigate({ to: `/tv/${result.id}` });
+            navigate({ to: `/tv/${result.id}`, params: { tvId: result.id } });
         } else if (result.media_type === "person") {
-            navigate({ to: `/person/${result.id}` });
+            navigate({
+                to: `/person/${result.id}`,
+                params: { personId: result.id },
+            });
         }
         setQuery("");
         setIsOpen(false);
     };
 
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleDocumentClick = (event: MouseEvent) => {
+            if (!rootRef.current) {
+                return;
+            }
+            const target = event.target as Node | null;
+            if (target && !rootRef.current.contains(target)) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleDocumentClick);
+        return () =>
+            document.removeEventListener("mousedown", handleDocumentClick);
+    }, []);
+
     return (
-        <div className="relative w-full">
+        <div className="relative w-full" ref={rootRef}>
             <div className="relative">
                 <Search
                     aria-hidden

@@ -78,14 +78,12 @@ export function HeroSection({ movie }: HeroSectionProps) {
                         <div className="flex flex-wrap gap-2">
                             {/** biome-ignore lint/style/noMagicNumbers: <- Just ignore the lint error -> */}
                             {movieDetail.genres.slice(0, 3).map((genre) => (
-                                <Link
-                                    className="text-primary text-sm hover:underline"
+                                <span
+                                    className="text-primary text-sm"
                                     key={genre.id}
-                                    search={{ genre: genre.id, type: "movie" }}
-                                    to="/discover"
                                 >
                                     {genre.name}
-                                </Link>
+                                </span>
                             ))}
                         </div>
                     )}
@@ -110,7 +108,7 @@ export function HeroSection({ movie }: HeroSectionProps) {
                             </Button>
                         )}
 
-                        <Link to={`/movie/${movie.id}`}>
+                        <Link params={{ movieId: movie.id }} search={{ tab: "overview" }} to="/movie/$movieId">
                             <Button size="lg" variant="outline">
                                 View Details
                             </Button>
