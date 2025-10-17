@@ -2,6 +2,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import type { Genre } from "@/types/tmdb";
 import { tmdbClient } from "../client";
+import { STALE, safeArray } from "./_utils";
 
 export const genreQueryOptions = {
     // Get movie genres
@@ -14,7 +15,8 @@ export const genreQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 60 * 24, // 24 hours (genres rarely change)
+            staleTime: STALE.day, // 24 hours (genres rarely change)
+            select: (d) => ({ genres: safeArray(d.genres) }),
         }),
 
     // Get TV genres
@@ -27,7 +29,8 @@ export const genreQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 60 * 24,
+            staleTime: STALE.day,
+            select: (d) => ({ genres: safeArray(d.genres) }),
         }),
 
     // Get all genres (combined)
@@ -42,8 +45,8 @@ export const genreQueryOptions = {
 
                 // Combine and deduplicate by id
                 const allGenres = [
-                    ...movieGenres.data.genres,
-                    ...tvGenres.data.genres,
+                    ...safeArray(movieGenres.data.genres),
+                    ...safeArray(tvGenres.data.genres),
                 ];
                 const uniqueGenres = Array.from(
                     new Map(allGenres.map((g) => [g.id, g])).values()
@@ -51,6 +54,6 @@ export const genreQueryOptions = {
 
                 return { genres: uniqueGenres };
             },
-            staleTime: 1000 * 60 * 60 * 24,
+            staleTime: STALE.day,
         }),
 };

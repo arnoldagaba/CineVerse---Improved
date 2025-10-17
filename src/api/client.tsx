@@ -1,6 +1,5 @@
 import axios, { type AxiosError } from "axios";
 import { StatusCodes } from "http-status-codes";
-import toast from "react-hot-toast";
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -39,13 +38,13 @@ tmdbClient.interceptors.response.use(
                     console.error("[TMDB API] Invalid API key");
                     break;
                 case StatusCodes.NOT_FOUND:
-                    toast.error("[TMDB API] Resource not found");
+                    console.error("[TMDB API] Resource not found");
                     break;
                 case StatusCodes.TOO_MANY_REQUESTS:
-                    toast.error("[TMDB API] Rate limit exceeded");
+                    console.error("[TMDB API] Rate limit exceeded");
                     break;
                 case StatusCodes.INTERNAL_SERVER_ERROR:
-                    toast.error("[TMDB API] Server error");
+                    console.error("[TMDB API] Server error");
                     break;
                 default:
                     console.error(
@@ -54,7 +53,7 @@ tmdbClient.interceptors.response.use(
                     );
             }
         } else if (error.request) {
-            toast.error("[TMDB API] Network error - no response received");
+            console.error("[TMDB API] Network error - no response received");
         } else {
             console.error("[TMDB API] Error:", error.message);
         }

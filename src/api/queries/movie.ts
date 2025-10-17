@@ -9,7 +9,9 @@ import type {
     Review,
     Videos,
 } from "@/types/tmdb";
+import { getNextPageParam, getPreviousPageParam } from "@/utils/cache-utils";
 import { tmdbClient } from "../client";
+import { placeholderInfinite, STALE, safeArray } from "./_utils";
 
 export const movieQueryOptions = {
     // Get movie details
@@ -22,7 +24,7 @@ export const movieQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 5, // 5 minutes
+            staleTime: STALE.short,
         }),
 
     // Get movie credits (cast & crew)
@@ -35,7 +37,12 @@ export const movieQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 10,
+            staleTime: STALE.medium,
+            select: (d) => ({
+                ...d,
+                cast: safeArray(d.cast),
+                crew: safeArray(d.crew),
+            }),
         }),
 
     // Get movie videos
@@ -48,7 +55,8 @@ export const movieQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 30,
+            staleTime: STALE.long,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Get movie images
@@ -61,7 +69,13 @@ export const movieQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 30,
+            staleTime: STALE.long,
+            select: (d) => ({
+                ...d,
+                backdrops: safeArray(d.backdrops),
+                posters: safeArray(d.posters),
+                logos: safeArray(d.logos),
+            }),
         }),
 
     // Get similar movies
@@ -75,7 +89,8 @@ export const movieQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Get movie recommendations
@@ -89,7 +104,8 @@ export const movieQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Get movie reviews
@@ -102,7 +118,8 @@ export const movieQueryOptions = {
                 >(`/movie/${movieId}/reviews`, { params: { page } });
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Get popular movies
@@ -118,7 +135,8 @@ export const movieQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Infinite scroll version of popular movies
@@ -137,7 +155,20 @@ export const movieQueryOptions = {
             getNextPageParam,
             getPreviousPageParam,
             initialPageParam: 1,
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({
+                ...d,
+                pages: d.pages.map((p) => ({
+                    ...p,
+                    results: safeArray(p.results),
+                })),
+            }),
+            placeholderData: placeholderInfinite<PaginatedResponse<Movie>>({
+                page: 1,
+                results: [],
+                total_pages: 1,
+                total_results: 0,
+            }),
         }),
 
     // Get top rated movies
@@ -153,7 +184,8 @@ export const movieQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 10,
+            staleTime: STALE.medium,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Get now playing movies
@@ -169,7 +201,8 @@ export const movieQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Get upcoming movies
@@ -185,7 +218,8 @@ export const movieQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Get movies by collection
@@ -198,6 +232,6 @@ export const movieQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 30,
+            staleTime: STALE.long,
         }),
 };

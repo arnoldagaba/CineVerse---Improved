@@ -8,6 +8,7 @@ import type {
     TVShow,
 } from "@/types/tmdb";
 import { tmdbClient } from "../client";
+import { STALE, safeArray } from "./_utils";
 
 export type TimeWindow = "day" | "week";
 export type MediaType = "all" | "movie" | "tv" | "person";
@@ -23,7 +24,8 @@ export const trendingQueryOptions = {
                 >(`/trending/${mediaType}/${timeWindow}`, { params: { page } });
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Trending movies
@@ -37,7 +39,8 @@ export const trendingQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Trending TV shows
@@ -50,7 +53,8 @@ export const trendingQueryOptions = {
                 >(`/trending/tv/${timeWindow}`, { params: { page } });
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Trending people
@@ -63,7 +67,8 @@ export const trendingQueryOptions = {
                 >(`/trending/person/${timeWindow}`, { params: { page } });
                 return data;
             },
-            staleTime: 1000 * 60 * 10,
+            staleTime: STALE.medium,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // All trending content (movies, TV, people)
@@ -76,6 +81,7 @@ export const trendingQueryOptions = {
                 >(`/trending/all/${timeWindow}`, { params: { page } });
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 };

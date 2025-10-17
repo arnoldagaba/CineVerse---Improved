@@ -11,7 +11,9 @@ import type {
     TVShowDetail,
     Videos,
 } from "@/types/tmdb";
+import { getNextPageParam, getPreviousPageParam } from "@/utils/cache-utils";
 import { tmdbClient } from "../client";
+import { placeholderInfinite, STALE, safeArray } from "./_utils";
 
 export const tvQueryOptions = {
     // Get TV show details
@@ -24,7 +26,7 @@ export const tvQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
         }),
 
     // Get TV show credits
@@ -37,7 +39,12 @@ export const tvQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 10,
+            staleTime: STALE.medium,
+            select: (d) => ({
+                ...d,
+                cast: safeArray(d.cast),
+                crew: safeArray(d.crew),
+            }),
         }),
 
     // Get TV show videos
@@ -50,7 +57,8 @@ export const tvQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 30,
+            staleTime: STALE.long,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Get TV show images
@@ -63,7 +71,13 @@ export const tvQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 30,
+            staleTime: STALE.long,
+            select: (d) => ({
+                ...d,
+                backdrops: safeArray(d.backdrops),
+                posters: safeArray(d.posters),
+                logos: safeArray(d.logos),
+            }),
         }),
 
     // Get similar TV shows
@@ -76,7 +90,8 @@ export const tvQueryOptions = {
                 >(`/tv/${tvId}/similar`, { params: { page } });
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Get TV show recommendations
@@ -89,7 +104,8 @@ export const tvQueryOptions = {
                 >(`/tv/${tvId}/recommendations`, { params: { page } });
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Get TV show reviews
@@ -102,7 +118,8 @@ export const tvQueryOptions = {
                 >(`/tv/${tvId}/reviews`, { params: { page } });
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Get season details
@@ -115,7 +132,7 @@ export const tvQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 10,
+            staleTime: STALE.medium,
         }),
 
     // Get episode details
@@ -135,7 +152,7 @@ export const tvQueryOptions = {
                 );
                 return data;
             },
-            staleTime: 1000 * 60 * 10,
+            staleTime: STALE.medium,
         }),
 
     // Get popular TV shows
@@ -150,7 +167,8 @@ export const tvQueryOptions = {
                 });
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Get top rated TV shows
@@ -165,7 +183,8 @@ export const tvQueryOptions = {
                 });
                 return data;
             },
-            staleTime: 1000 * 60 * 10,
+            staleTime: STALE.medium,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Get airing today
@@ -180,7 +199,8 @@ export const tvQueryOptions = {
                 });
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Get on the air
@@ -195,7 +215,8 @@ export const tvQueryOptions = {
                 });
                 return data;
             },
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({ ...d, results: safeArray(d.results) }),
         }),
 
     // Infinite scroll version
@@ -213,6 +234,19 @@ export const tvQueryOptions = {
             getNextPageParam,
             getPreviousPageParam,
             initialPageParam: 1,
-            staleTime: 1000 * 60 * 5,
+            staleTime: STALE.short,
+            select: (d) => ({
+                ...d,
+                pages: d.pages.map((p) => ({
+                    ...p,
+                    results: safeArray(p.results),
+                })),
+            }),
+            placeholderData: placeholderInfinite<PaginatedResponse<TVShow>>({
+                page: 1,
+                results: [],
+                total_pages: 1,
+                total_results: 0,
+            }),
         }),
 };

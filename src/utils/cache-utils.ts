@@ -92,3 +92,18 @@ export function getCacheStats(queryClient: QueryClient) {
         }, 0),
     };
 }
+
+// Pagination helpers for React Query infinite queries
+export function getNextPageParam<T extends { page: number; total_pages: number }>(
+    lastPage: T
+): number | undefined {
+    return lastPage.page < lastPage.total_pages
+        ? lastPage.page + 1
+        : undefined;
+}
+
+export function getPreviousPageParam<T extends { page: number }>(
+    firstPage: T
+): number | undefined {
+    return firstPage.page > 1 ? firstPage.page - 1 : undefined;
+}

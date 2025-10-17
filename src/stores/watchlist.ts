@@ -14,7 +14,9 @@ export const useWatchlistStore = create<WatchlistStore>()(
             items: [],
             addToWatchlist: (id) => {
                 set((state) => ({
-                    items: [...state.items, id],
+                    items: state.items.includes(id)
+                        ? state.items
+                        : [...state.items, id],
                 }));
             },
             isInWatchlist: (id) => !!get().items.find((item) => item === id),
