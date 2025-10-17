@@ -25,7 +25,10 @@ export function SearchBar() {
     const handleSearch = (searchQuery: string) => {
         if (searchQuery.trim()) {
             addToSearchHistory(searchQuery);
-            // No search route defined; just close dropdown and keep history
+            navigate({
+                to: "/search",
+                search: { q: searchQuery, type: "all" },
+            });
             setQuery("");
             setIsOpen(false);
         }
