@@ -90,8 +90,16 @@ export function TrendingPage() {
                             ))}
                         </div>
                     ) : (
-                        // Movie/TV queries return a homogeneous list we can pass to MovieGrid
-                        <MovieGrid movies={data.results} />
+                        // For movie/tv filters we normalize SearchResult -> Movie|TVShow so MovieGrid receives the correct shape
+                        <MovieGrid
+                            movies={data.results.map(
+                                (r) =>
+                                    // normalizeResult returns a Movie-like or TV-like shape
+                                    normalizeResult(r) as unknown as
+                                        | import("@/types/tmdb").Movie
+                                        | import("@/types/tmdb").TVShow
+                            )}
+                        />
                     )}
 
                     {/* Pagination */}
