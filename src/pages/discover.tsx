@@ -1,41 +1,52 @@
-/** biome-ignore-all lint/style/noMagicNumbers: <--- Just ignore the lint error --> */
+/** biome-ignore-all lint/style/noMagicNumbers: <- Just ignore the lint error -> */
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useMatch, useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { discoverQueryOptions, genreQueryOptions } from "@/api/queries";
 import { DiscoverFilters } from "@/components/discover/filters";
 import { MovieGrid } from "@/components/grid/movie";
 import { Button } from "@/components/ui/button";
-import { getPaginationRange } from "@/utils/pagination";
+import type { DiscoverFilters as DiscoverFiltersType } from "@/types/tmdb";
+import { getPaginationRange, usePaginationParams } from "@/utils/pagination";
 import { MOVIE_SORT_OPTIONS, TV_SORT_OPTIONS } from "@/utils/sort-options";
 
 export function DiscoverPage() {
-    const search = useMatch({ from: "/search" }).search;
+    // Use the discover route's validated search params so types match the
+    // discoverQueryOptions and the route's schema (includes `page`, `type`, etc.)
+    const search = useSearch({ from: "/discover" }) as DiscoverFiltersType;
     const navigate = useNavigate();
 
-    const { data } = useSuspenseQuery(discoverQueryOptions.discover(search));
+    const { data } = useSuspenseQuery(
+        discoverQueryOptions.discover(search as DiscoverFiltersType)
+    );
     const { data: genresData } = useSuspenseQuery(
         genreQueryOptions.movieList()
     );
 
-    const pages = getPaginationRange(search.page, data.total_pages);
-
-    const handlePageChange = (page: number) => {
-        navigate({
-            search: { ...search, page },
-        });
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    };
+    const { currentPage, setPage } = usePaginationParams();
+    const pages = getPaginationRange(currentPage, data.total_pages);
 
     const handleFilterChange = (newFilters: Partial<typeof search>) => {
-        navigate({
-            search: { ...search, ...newFilters, page: 1 },
-        });
+        const nextSearch = {
+            ...(search as unknown as Record<string, unknown>),
+            ...(newFilters as unknown as Record<string, unknown>),
+            page: 1,
+        } as unknown as Record<string, unknown>;
+
+        navigate({ to: "/discover", search: nextSearch });
     };
 
-    const sortOptions =
-        search.type === "movie" ? MOVIE_SORT_OPTIONS : TV_SORT_OPTIONS;
+    // MOVIE_SORT_OPTIONS and TV_SORT_OPTIONS are readonly tuples. The
+    // DiscoverFilters component accepts an array of options shaped as
+    // { value: string; label: string } — derive that type here without
+    // resorting to `any`.
+    type SortOption = { value: string; label: string };
+    const sortOptions: SortOption[] = (
+        search.type === "movie"
+            ? (MOVIE_SORT_OPTIONS as unknown)
+            : (TV_SORT_OPTIONS as unknown)
+    ) as SortOption[];
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -58,8 +69,8 @@ export function DiscoverPage() {
                 <main className="lg:col-span-3">
                     <div className="mb-6 flex items-center justify-between">
                         <p className="text-muted-foreground">
-                            Showing {(search.page - 1) * 20 + 1}-
-                            {Math.min(search.page * 20, data.total_results)} of{" "}
+                            Showing {(currentPage - 1) * 20 + 1}-
+                            {Math.min(currentPage * 20, data.total_results)} of{" "}
                             {data.total_results} results
                         </p>
                     </div>
@@ -72,10 +83,10 @@ export function DiscoverPage() {
                             {data.total_pages > 1 && (
                                 <div className="mt-8 flex justify-center gap-2">
                                     <Button
-                                        disabled={search.page === 1}
+                                        disabled={currentPage === 1}
                                         onClick={() =>
-                                            handlePageChange(
-                                                Math.max(1, search.page - 1)
+                                            setPage(
+                                                Math.max(1, currentPage - 1)
                                             )
                                         }
                                         size="icon"
@@ -88,7 +99,7 @@ export function DiscoverPage() {
                                         page === "..." ? (
                                             <span
                                                 className="px-2 py-1"
-                                                key={`ellipsis-${i}`}
+                                                key={`ellipsis-${pages[i - 1] ?? "s"}-${pages[i + 1] ?? "e"}`}
                                             >
                                                 ...
                                             </span>
@@ -96,12 +107,10 @@ export function DiscoverPage() {
                                             <Button
                                                 key={page}
                                                 onClick={() =>
-                                                    handlePageChange(
-                                                        Number(page)
-                                                    )
+                                                    setPage(Number(page))
                                                 }
                                                 variant={
-                                                    search.page === page
+                                                    currentPage === page
                                                         ? "default"
                                                         : "outline"
                                                 }
@@ -113,13 +122,13 @@ export function DiscoverPage() {
 
                                     <Button
                                         disabled={
-                                            search.page === data.total_pages
+                                            currentPage === data.total_pages
                                         }
                                         onClick={() =>
-                                            handlePageChange(
+                                            setPage(
                                                 Math.min(
                                                     data.total_pages,
-                                                    search.page + 1
+                                                    currentPage + 1
                                                 )
                                             )
                                         }

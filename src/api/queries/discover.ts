@@ -6,6 +6,7 @@ import type {
     PaginatedResponse,
     TVShow,
 } from "@/types/tmdb";
+import { getNextPageParam, getPreviousPageParam } from "@/utils/cache-utils";
 import { tmdbClient } from "../client";
 
 export const discoverQueryOptions = {
@@ -41,12 +42,30 @@ export const discoverQueryOptions = {
         }),
 
     // Combined discover (based on type filter)
-    discover: (filters: DiscoverFilters = {}) => {
-        const { type = "movie", ...rest } = filters;
-        return type === "movie"
-            ? discoverQueryOptions.movies(rest)
-            : discoverQueryOptions.tv(rest);
-    },
+    // Returns a single queryOptions object whose queryFn will fetch either
+    // movies or tv depending on the `type` filter. This keeps the query
+    // options typed consistently and avoids union-typed UseQueryOptions.
+    discover: (filters: DiscoverFilters = {}) =>
+        queryOptions<PaginatedResponse<Movie | TVShow>>({
+            queryKey: ["discover", "combined", filters] as const,
+            queryFn: async () => {
+                const { type = "movie", ...rest } = filters;
+                if (type === "movie") {
+                    const resp = await tmdbClient.get<PaginatedResponse<Movie>>(
+                        "/discover/movie",
+                        { params: rest }
+                    );
+                    return resp.data as PaginatedResponse<Movie | TVShow>;
+                }
+
+                const resp = await tmdbClient.get<PaginatedResponse<TVShow>>(
+                    "/discover/tv",
+                    { params: rest }
+                );
+                return resp.data as PaginatedResponse<Movie | TVShow>;
+            },
+            staleTime: 1000 * 60 * 5,
+        }),
 
     // Infinite scroll for movies
     moviesInfinite: (filters: Omit<DiscoverFilters, "page"> = {}) =>
