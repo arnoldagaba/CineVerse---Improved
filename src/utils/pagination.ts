@@ -109,3 +109,41 @@ export function getPageMetadata(
 
     return metadata;
 }
+
+/**
+ * Generate a pagination range for UI page buttons.
+ * Returns an array containing page numbers and '...' strings for ellipses.
+ * Example: [1, '...', 4, 5, 6, '...', 10]
+ */
+export function getPaginationRange(
+    currentPage: number,
+    totalPages: number,
+    maxVisible = 7
+): Array<number | "..."> {
+    const pages: Array<number | "..."> = [];
+    if (totalPages <= maxVisible) {
+        for (let i = 1; i <= totalPages; i++) { pages.push(i); }
+        return pages;
+    }
+
+    const siblings = 1; // pages to show on each side of current
+    const left = Math.max(2, currentPage - siblings);
+    const right = Math.min(totalPages - 1, currentPage + siblings);
+
+    pages.push(1);
+
+    if (left > 2) {
+        pages.push("...");
+    }
+
+    for (let i = left; i <= right; i++) {
+        pages.push(i);
+    }
+
+    if (right < totalPages - 1) {
+        pages.push("...");
+    }
+
+    pages.push(totalPages);
+    return pages;
+}
