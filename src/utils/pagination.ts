@@ -1,17 +1,25 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 
 /**
- * Hook for managing pagination state in URL
+ * Hook for managing pagination state in URL search params
+ * @param from - Route path to use for search params and navigation
  */
-export function usePaginationParams() {
+export function usePaginationParams(
+    from: "/discover" | "/search" | "/watchlist" | "/" = "/discover"
+) {
     const navigate = useNavigate();
-    const search = useSearch();
+    const search = useSearch({ from });
 
-    const currentPage = Number(search.page) || 1;
+    // Assert search includes page since we're using discover route by default
+    type SearchWithPage = { page?: number | string } & Record<string, unknown>;
+    const searchWithPage = search as SearchWithPage;
+
+    const currentPage = Number(searchWithPage.page) || 1;
 
     const setPage = (page: number) => {
         navigate({
-            search: { ...search, page },
+            to: from,
+            search: { ...(searchWithPage as Record<string, unknown>), page },
         });
     };
 
@@ -122,7 +130,9 @@ export function getPaginationRange(
 ): Array<number | "..."> {
     const pages: Array<number | "..."> = [];
     if (totalPages <= maxVisible) {
-        for (let i = 1; i <= totalPages; i++) { pages.push(i); }
+        for (let i = 1; i <= totalPages; i++) {
+            pages.push(i);
+        }
         return pages;
     }
 
