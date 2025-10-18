@@ -141,10 +141,15 @@ export function MovieCard({ movie, size = "md" }: MovieCardProps) {
             </Card>
         </Link>
     ) : (
-        <a href={`/tv/${movie.id}?tab=overview`}>
+        <Link
+            params={{ tvId: movie.id }}
+            search={{ tab: "overview" }}
+            to={"/tv/$tvId"}
+        >
             <Card className="group flex h-full cursor-pointer flex-col overflow-hidden transition-all duration-300 hover:shadow-lg">
                 <CardContent
                     className="relative flex-1 overflow-hidden bg-muted p-0"
+                    onClick={handleClick}
                     onMouseEnter={handleMouseEnter}
                 >
                     {/** biome-ignore lint/nursery/useImageSize: <- Just ignore the lint error -> */}
@@ -207,6 +212,6 @@ export function MovieCard({ movie, size = "md" }: MovieCardProps) {
                     </div>
                 </CardHeader>
             </Card>
-        </a>
+        </Link>
     );
 }
