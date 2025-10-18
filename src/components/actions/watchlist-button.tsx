@@ -53,7 +53,7 @@ export function WatchlistButton({
             removeFromWatchlist(id);
             toast.success("Removed from watchlist");
         } else {
-            addToWatchlist(id);
+            addToWatchlist(id, type);
             toast.success("Added to watchlist");
         }
 
