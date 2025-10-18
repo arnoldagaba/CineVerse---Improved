@@ -26,13 +26,13 @@ export function CTA() {
 
                     <div className="flex gap-3">
                         <Button asChild size="lg" variant="secondary">
-                            <Link to="/discover?type=movie">
+                            <Link search={{ type: "movie" }} to="/discover">
                                 Discover Movies
                             </Link>
                         </Button>
-                        
+
                         <Button asChild size="lg" variant="secondary">
-                            <Link to="/discover?type=tv">
+                            <Link search={{ type: "tv" }} to="/discover">
                                 Discover TV Shows
                             </Link>
                         </Button>

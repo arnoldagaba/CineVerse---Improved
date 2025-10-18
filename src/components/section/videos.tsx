@@ -1,6 +1,5 @@
 /** biome-ignore-all lint/style/noMagicNumbers: <- Just ignore the lint error -> */
 import { Play } from "lucide-react";
-import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useVideoModal } from "@/hooks/use-video-modal";
@@ -12,7 +11,6 @@ type VideosSectionProps = {
 
 export function VideosSection({ videos }: VideosSectionProps) {
     const { openModal } = useVideoModal();
-    const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
     const filteredVideos = videos.filter((v) => v.site === "YouTube");
 

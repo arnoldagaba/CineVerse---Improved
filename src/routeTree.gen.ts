@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WatchlistRouteImport } from './routes/watchlist'
+import { Route as TrendingRouteImport } from './routes/trending'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as DiscoverRouteImport } from './routes/discover'
 import { Route as IndexRouteImport } from './routes/index'
@@ -20,6 +21,11 @@ import { Route as MovieMovieIdRouteImport } from './routes/movie/$movieId'
 const WatchlistRoute = WatchlistRouteImport.update({
   id: '/watchlist',
   path: '/watchlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrendingRoute = TrendingRouteImport.update({
+  id: '/trending',
+  path: '/trending',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
   '/search': typeof SearchRoute
+  '/trending': typeof TrendingRoute
   '/watchlist': typeof WatchlistRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/person/$personId': typeof PersonPersonIdRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
   '/search': typeof SearchRoute
+  '/trending': typeof TrendingRoute
   '/watchlist': typeof WatchlistRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/person/$personId': typeof PersonPersonIdRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/discover': typeof DiscoverRoute
   '/search': typeof SearchRoute
+  '/trending': typeof TrendingRoute
   '/watchlist': typeof WatchlistRoute
   '/movie/$movieId': typeof MovieMovieIdRoute
   '/person/$personId': typeof PersonPersonIdRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/discover'
     | '/search'
+    | '/trending'
     | '/watchlist'
     | '/movie/$movieId'
     | '/person/$personId'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/discover'
     | '/search'
+    | '/trending'
     | '/watchlist'
     | '/movie/$movieId'
     | '/person/$personId'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/discover'
     | '/search'
+    | '/trending'
     | '/watchlist'
     | '/movie/$movieId'
     | '/person/$personId'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DiscoverRoute: typeof DiscoverRoute
   SearchRoute: typeof SearchRoute
+  TrendingRoute: typeof TrendingRoute
   WatchlistRoute: typeof WatchlistRoute
   MovieMovieIdRoute: typeof MovieMovieIdRoute
   PersonPersonIdRoute: typeof PersonPersonIdRoute
@@ -128,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/watchlist'
       fullPath: '/watchlist'
       preLoaderRoute: typeof WatchlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trending': {
+      id: '/trending'
+      path: '/trending'
+      fullPath: '/trending'
+      preLoaderRoute: typeof TrendingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -179,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DiscoverRoute: DiscoverRoute,
   SearchRoute: SearchRoute,
+  TrendingRoute: TrendingRoute,
   WatchlistRoute: WatchlistRoute,
   MovieMovieIdRoute: MovieMovieIdRoute,
   PersonPersonIdRoute: PersonPersonIdRoute,

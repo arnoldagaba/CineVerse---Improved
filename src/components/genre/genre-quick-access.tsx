@@ -26,7 +26,7 @@ export function GenreQuickAccess({
                         search={{
                             genre: genre.id,
                             type: "movie",
-                            sort: "popularity.desc",
+                            sort_by: "popularity.desc",
                         }}
                         to="/discover"
                     >

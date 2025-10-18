@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/style/noMagicNumbers: <- Ignore the lint error -> */
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +11,10 @@ type ReviewsSectionProps = {
     movieId: number;
 };
 
-export function ReviewsSection({ reviews, movieId }: ReviewsSectionProps) {
+export function ReviewsSection({
+    reviews,
+    movieId: _movieId,
+}: ReviewsSectionProps) {
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
     const toggleExpanded = (id: string) => {
@@ -43,7 +47,7 @@ export function ReviewsSection({ reviews, movieId }: ReviewsSectionProps) {
                                 <h4 className="font-semibold">
                                     {review.author}
                                 </h4>
-                                
+
                                 <p className="text-muted-foreground text-xs">
                                     {new Date(
                                         review.created_at

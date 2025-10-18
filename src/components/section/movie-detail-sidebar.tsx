@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { RatingWidget } from "@/components/actions/rating-widget";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getPosterUrl } from "@/config/tmdb";
@@ -72,12 +71,14 @@ export function MovieDetailSidebar({ movie }: MovieDetailSidebarProps) {
                         <CardTitle className="text-base">Collection</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <Link
+                        <a
                             className="font-medium text-primary text-sm hover:underline"
-                            to={`/collection/${movie.belongs_to_collection.id}`}
+                            href={`https://www.themoviedb.org/collection/${movie.belongs_to_collection.id}`}
+                            rel="noopener noreferrer"
+                            target="_blank"
                         >
                             {movie.belongs_to_collection.name}
-                        </Link>
+                        </a>
                     </CardContent>
                 </Card>
             )}

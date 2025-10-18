@@ -25,7 +25,8 @@ export function CastSection({ cast, fullList = false }: CastSectionProps) {
                         <Link
                             className="group"
                             key={member.id}
-                            to={`/person/${member.id}`}
+                            params={{ personId: member.id }}
+                            to="/person/$personId"
                         >
                             <div className="space-y-2">
                                 <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-muted">

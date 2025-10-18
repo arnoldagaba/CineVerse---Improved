@@ -5,7 +5,12 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
  * @param from - Route path to use for search params and navigation
  */
 export function usePaginationParams(
-    from: "/discover" | "/search" | "/watchlist" | "/" = "/discover"
+    from:
+        | "/discover"
+        | "/search"
+        | "/watchlist"
+        | "/trending"
+        | "/" = "/discover"
 ) {
     const navigate = useNavigate();
     const search = useSearch({ from });
